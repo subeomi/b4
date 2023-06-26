@@ -55,6 +55,7 @@ public class ProductServiceImpl implements ProductService{
         return pno;
     }
 
+
     @Override
     public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
 
@@ -69,14 +70,51 @@ public class ProductServiceImpl implements ProductService{
 
     }
 
+
     @Override
     public ProductDTO get(Integer pno) {
         return productMapper.selectOne(pno);
     }
 
+
     @Override
     public List<String> getImage(Integer pno) {
         return productMapper.selectImages(pno);
+    }
+
+    
+    @Override
+    public void modify(ProductDTO dto) {
+        
+        // 상품 수정
+        productMapper.updateOne(dto);
+
+        // 기존 이미지 삭제
+        productMapper.deleteImages(dto.getPno());
+
+        // 신규 이미지 추가
+        List<String> fileNames = dto.getFileNames();
+
+        Integer pno = dto.getPno();
+
+        log.info("-----------------------------" + pno);
+
+        AtomicInteger index = new AtomicInteger();
+
+        List<Map<String,String>> list = fileNames.stream().map(str -> {
+        String uuid = str.substring(0, 36);
+        String fileName = str.substring(37);
+
+        return Map.of("uuid", uuid, "fileName", fileName,"pno", ""+pno, "ord", "" + index.getAndIncrement());
+
+        }).collect(Collectors.toList());
+
+        log.info(list);
+
+        int countImages = productMapper.insertImages(list);
+
+        log.info("countImages: " + countImages);
+
     }
     
 }

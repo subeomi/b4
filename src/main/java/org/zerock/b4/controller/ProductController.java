@@ -38,31 +38,39 @@ public class ProductController {
     model.addAttribute("dto", dto);
 
 
+        // 서비스에서 상품 조회 Model에 담아준다.
+        // todo -> 상품 조회 기능이 없다. -> DTO 필요, Mapper 필요, Service 필요
 
-            // 서비스에서 상품 조회 Model에 담아준다.
-            // todo -> 상품 조회 기능이 없다. -> DTO 필요, Mapper 필요, Service 필요
+        return "/product/modify";
+    }
 
-            return "/product/modify";
-        }
-        @GetMapping("/images/{pno}")
-        @ResponseBody
-        public List<String> getImages(@PathVariable("pno") Integer pno ) {
+    
+    @GetMapping("/images/{pno}")
+    @ResponseBody
+    public List<String> getImages(@PathVariable("pno") Integer pno ) {
             
-            return productService.getImage(pno);
-        }
+        return productService.getImage(pno);
+    }
 
         
 
-        // step 3 POST로 상품 수정
-        // @PostMapping("modify/{pno}")
-        // public String modifyPost()
+    // step 3 POST로 상품 수정
+    @PostMapping("modify/{pno}")
+    public String modifyPost(@PathVariable("pno") Integer pno, ProductDTO dto){
+            
+        dto.setPno(pno);
 
-        // {
-        //     // DTO를 확인 -> 등록 과정과 동일한 내용, pno는 이미 존재
-        //     // DTO를 개발
+        productService.modify(dto);
 
-        //     return "";
-        // }
+        return "redirect:/product/read/" + pno ;
+    }
+
+    // {
+    //     // DTO를 확인 -> 등록 과정과 동일한 내용, pno는 이미 존재
+    //     // DTO를 개발
+
+    //     return "";
+    // }
 
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model){
