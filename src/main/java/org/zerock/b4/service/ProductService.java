@@ -20,7 +20,8 @@ public interface ProductService {
 
     List<String> getImage(Integer pno);
 
-    // void modify(//DTO);
+    void modify(ProductDTO dto);
+    
     // 상품 데이터 수정
     // 기존 첨부파일 데이터베이스내에서 삭제
     // DTO에있는 첨부파일 데이터베이스에 추가

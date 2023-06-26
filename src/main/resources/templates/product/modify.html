@@ -8,16 +8,20 @@
 <body>
     <h1>Product modify</h1>
 
-    <form>
-
+    <form class="actionForm" th:action="|/product/modify/${dto.pno}|" method="post">
         <p>
             <input type="text" name="pno" th:value="${dto.pno}">
         </p>
         <p>
-            <input type="text" name="pname" th:value="${dto.pname}">
+            <input type="text" name="pname" th:value="${dto.pname}" >
         </p>
-
-
+        <p>
+            <button class="modBtn">Modify</button>
+            <button>Delete</button>
+            <div class="uploadHidden">
+                <!-- 여기에 input type="hidden" -->
+            </div>
+        </p>
     </form>
 
     <input class="uploadInput" type="file" name="upload" multiple >
@@ -57,9 +61,44 @@
         // 등록 과정과 유사 - 첨부파일 수정, 상품 데이터 수정
         // POST 방식으로 submit
         const pno = [[${dto.pno}]]
+
         const uploadUL = document.querySelector(".uploadUL")
         const uploadBtn = document.querySelector(".uploadBtn")
         const uploadInput = document.querySelector(".uploadInput")
+
+        const modBtn = document.querySelector(".modBtn")
+        const actionForm = document.querySelector(".actionForm")
+        const uploadHidden = document.querySelector(".uploadHidden")
+
+
+        modBtn.addEventListener("click", e =>{
+
+            e.preventDefault()
+            e.stopPropagation()
+
+            const liArr = uploadUL.querySelectorAll("li")
+
+            if(!liArr || liArr.length === 0){
+                alert("넣으라규")
+                return
+            }
+
+            let str = ""
+            for(let liObj of liArr){
+                console.log(liObj)
+                const uuid = liObj.getAttribute("data-uuid")
+                const fileName = liObj.getAttribute("data-filename")
+                console.log(uuid, fileName)
+                console.log("--------------------------------------")
+                str += `<input type='hidden' name='fileNames' value='${uuid}_${fileName}'>`
+            }
+
+            uploadHidden.innerHTML += str
+
+            actionForm.submit()
+
+        }, false)
+
 
         const loadImages= () => {
             axios.get(`http://localhost:8080/product/images/${pno}`)
@@ -100,9 +139,8 @@
 
         uploadUL.innerHTML += str
 
-
-
         }
+        
 
         const removeFile = (e, uuid, fileName) => {
             e.stopPropagation()
@@ -119,8 +157,9 @@
 
             // 해당 엘리먼트 삭제
             liObj.remove()
-
         }
+
+
         uploadBtn.addEventListener("click", e => {
             e.preventDefault()
             e.stopPropagation()
